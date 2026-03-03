@@ -5,9 +5,9 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
-import Image from "next/image";
 import LanguageSwitcher from "@/components/language-switcher";
 import WalletLoginButton from "@/components/wallet-login-button";
+import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
@@ -40,15 +40,38 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12 relative"
+      className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden"
       style={{ background: "#0A0A0A" }}
     >
-      {/* Background effects */}
+      {/* Background layers */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,175,240,0.08) 0%, transparent 60%)",
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,175,240,0.1) 0%, transparent 55%)",
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          bottom: "5%",
+          right: "10%",
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(123,97,255,0.07) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      {/* Subtle grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          mask: "radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)",
+          WebkitMask: "radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)",
         }}
       />
 
@@ -57,60 +80,75 @@ export default function LoginPage() {
         <LanguageSwitcher />
       </div>
 
-      <div className="relative w-full max-w-md">
+      <motion.div
+        className="relative w-full max-w-[420px]"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
-            <Image src="/cruze.png" alt="CruzeFans" width={36} height={36} />
-            <span className="text-2xl font-bold">
+        <div className="text-center mb-9">
+          <Link href="/" className="inline-flex items-center gap-3 mb-7 group">
+            <img
+              src="/cruze.png"
+              alt="CruzeFans"
+              width={36}
+              height={36}
+              style={{ filter: "drop-shadow(0 0 8px rgba(0,175,240,0.45))" }}
+            />
+            <span
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: "rgba(255,255,255,0.9)" }}
+            >
               Cruze<span style={{ color: "#00AFF0" }}>Fans</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-1">
+          <h1 className="text-2xl font-bold text-white mb-2">
             {t("auth", "login_title")}
           </h1>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
             {t("auth", "login_subtitle")}
           </p>
         </div>
 
         {/* Card */}
         <div
-          className="rounded-2xl p-6 sm:p-8"
+          className="rounded-2xl p-7"
           style={{
-            background: "rgba(20,20,20,0.8)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            backdropFilter: "blur(12px)",
+            background: "linear-gradient(145deg, rgba(17,17,17,0.98), rgba(13,13,13,0.96))",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(0,175,240,0.04)",
           }}
         >
-          {/* Wallet Button */}
+          {/* Wallet */}
           <div className="mb-6">
             <WalletLoginButton />
           </div>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-            <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.3)" }}>
+            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
+            <span className="text-xs font-medium uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.25)" }}>
               {t("auth", "or")}
             </span>
-            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
           </div>
 
           {/* Email Form */}
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
               <label
-                className="block text-xs font-medium mb-1.5"
-                style={{ color: "rgba(255,255,255,0.6)" }}
+                className="block text-xs font-semibold mb-2 uppercase tracking-wider"
+                style={{ color: "rgba(255,255,255,0.4)" }}
               >
                 {t("auth", "email")}
               </label>
               <div className="relative">
                 <Mail
-                  size={16}
-                  className="absolute left-4 top-1/2 -translate-y-1/2"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
+                  size={15}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "rgba(255,255,255,0.25)" }}
                 />
                 <input
                   type="email"
@@ -125,16 +163,16 @@ export default function LoginPage() {
 
             <div>
               <label
-                className="block text-xs font-medium mb-1.5"
-                style={{ color: "rgba(255,255,255,0.6)" }}
+                className="block text-xs font-semibold mb-2 uppercase tracking-wider"
+                style={{ color: "rgba(255,255,255,0.4)" }}
               >
                 {t("auth", "password")}
               </label>
               <div className="relative">
                 <Lock
-                  size={16}
-                  className="absolute left-4 top-1/2 -translate-y-1/2"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
+                  size={15}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "rgba(255,255,255,0.25)" }}
                 />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -147,27 +185,36 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: "rgba(255,255,255,0.25)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.6)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.25)"; }}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <p className="text-sm" style={{ color: "#EF4444" }}>
+              <div
+                className="px-4 py-3 rounded-xl text-sm"
+                style={{
+                  background: "rgba(239,68,68,0.08)",
+                  border: "1px solid rgba(239,68,68,0.2)",
+                  color: "#FC8181",
+                }}
+              >
                 {error}
-              </p>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 !py-3"
+              className="btn-primary w-full flex items-center justify-center gap-2 !py-3 mt-2"
             >
               {loading ? (
-                <Loader2 size={18} className="animate-spin" />
+                <Loader2 size={17} className="animate-spin" />
               ) : (
                 <>
                   {t("auth", "login_button")}
@@ -180,19 +227,21 @@ export default function LoginPage() {
 
         {/* Sign up link */}
         <p
-          className="text-center text-sm mt-6"
-          style={{ color: "rgba(255,255,255,0.45)" }}
+          className="text-center text-sm mt-7"
+          style={{ color: "rgba(255,255,255,0.38)" }}
         >
           {t("auth", "no_account")}{" "}
           <Link
             href="/signup"
             className="font-semibold transition-colors"
             style={{ color: "#00AFF0" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#33C4FF"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "#00AFF0"; }}
           >
             {t("nav", "signup")}
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

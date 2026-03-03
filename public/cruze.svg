@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <defs>
+    <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00AFF0"/>
+      <stop offset="100%" stop-color="#7B61FF"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Outer ring -->
+  <circle cx="20" cy="20" r="18" stroke="url(#cg)" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <!-- Stylized C arc -->
+  <path
+    d="M 28 11.5 A 12 12 0 1 0 28 28.5"
+    stroke="url(#cg)"
+    stroke-width="3"
+    stroke-linecap="round"
+    fill="none"
+    filter="url(#glow)"
+  />
+  <!-- Inner accent dot -->
+  <circle cx="20" cy="20" r="2.5" fill="url(#cg)" opacity="0.8"/>
+  <!-- Horizontal cross accent -->
+  <line x1="27" y1="20" x2="32" y2="20" stroke="url(#cg)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+</svg>

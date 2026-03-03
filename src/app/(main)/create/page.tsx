@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { motion } from "framer-motion";
 import {
   Upload,
   ImageIcon,
@@ -13,6 +14,7 @@ import {
   Clock,
   Loader2,
   Check,
+  X,
 } from "lucide-react";
 
 export default function CreatePostPage() {
@@ -77,38 +79,47 @@ export default function CreatePostPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">{t("create", "title")}</h1>
+    <motion.div
+      className="max-w-[560px] mx-auto px-4 py-8"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <h1 className="text-2xl font-bold tracking-tight mb-8">{t("create", "title")}</h1>
 
       <div
         className="rounded-2xl p-6"
         style={{
-          background: "#141414",
+          background: "linear-gradient(145deg, #111111, #0E0E0E)",
           border: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "0 2px 16px rgba(0,0,0,0.3)",
         }}
       >
         {/* Upload Area */}
         {!preview ? (
           <label
-            className="flex flex-col items-center justify-center py-16 rounded-xl cursor-pointer transition-all"
+            className="flex flex-col items-center justify-center py-16 rounded-xl cursor-pointer transition-all group"
             style={{
-              border: "2px dashed rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.02)",
+              border: "2px dashed rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.015)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(0,175,240,0.3)";
+              e.currentTarget.style.borderColor = "rgba(0,175,240,0.28)";
               e.currentTarget.style.background = "rgba(0,175,240,0.03)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.015)";
             }}
           >
-            <Upload size={32} style={{ color: "rgba(255,255,255,0.3)" }} className="mb-3" />
-            <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
-              {t("create", "upload")}
-            </span>
-            <span className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all group-hover:scale-110"
+              style={{ background: "rgba(0,175,240,0.08)", border: "1px solid rgba(0,175,240,0.15)" }}
+            >
+              <Upload size={24} style={{ color: "#00AFF0" }} />
+            </div>
+            <span className="text-sm font-semibold text-white mb-1.5">{t("create", "upload")}</span>
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
               JPG, PNG, GIF, MP4 (max 10MB)
             </span>
             <input
@@ -135,28 +146,39 @@ export default function CreatePostPage() {
                 style={{ background: "#0A0A0A" }}
               />
             )}
+            {/* Remove button */}
+            <button
+              onClick={() => { setPreview(null); setMediaUrl(""); }}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              style={{ background: "rgba(0,0,0,0.6)", color: "rgba(255,255,255,0.8)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239,68,68,0.7)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.6)"; }}
+            >
+              <X size={14} />
+            </button>
             {uploading && (
               <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ background: "rgba(0,0,0,0.5)" }}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl"
+                style={{ background: "rgba(0,0,0,0.6)" }}
               >
-                <Loader2 size={32} className="animate-spin" style={{ color: "#00AFF0" }} />
+                <Loader2 size={28} className="animate-spin" style={{ color: "#00AFF0" }} />
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>Uploading...</p>
               </div>
             )}
           </div>
         )}
 
         {/* Type Toggle */}
-        <div className="flex items-center gap-2 mt-5 mb-4">
+        <div className="flex items-center gap-2 mt-5 mb-5">
           <TypeButton
             active={type === "PHOTO"}
-            icon={<ImageIcon size={16} />}
+            icon={<ImageIcon size={15} />}
             label={t("create", "photo")}
             onClick={() => setType("PHOTO")}
           />
           <TypeButton
             active={type === "VIDEO"}
-            icon={<Film size={16} />}
+            icon={<Film size={15} />}
             label={t("create", "video")}
             onClick={() => setType("VIDEO")}
           />
@@ -167,7 +189,7 @@ export default function CreatePostPage() {
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            className="input-field min-h-[80px] resize-none mb-4"
+            className="input-field min-h-[90px] resize-none mb-4"
             placeholder={t("create", "caption_placeholder")}
             maxLength={500}
           />
@@ -175,16 +197,16 @@ export default function CreatePostPage() {
 
         {/* Visibility */}
         {!isStory && (
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2.5 mb-5">
             <VisibilityButton
               active={isPublic}
-              icon={<Globe size={16} />}
+              icon={<Globe size={15} />}
               label={t("create", "public")}
               onClick={() => setIsPublic(true)}
             />
             <VisibilityButton
               active={!isPublic}
-              icon={<Lock size={16} />}
+              icon={<Lock size={15} />}
               label={t("create", "exclusive")}
               onClick={() => setIsPublic(false)}
             />
@@ -192,26 +214,43 @@ export default function CreatePostPage() {
         )}
 
         {/* Story Toggle */}
-        <label className="flex items-center gap-3 mb-6 cursor-pointer">
+        <label className="flex items-center justify-between mb-6 cursor-pointer p-4 rounded-xl transition-colors"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <div className="flex items-center gap-2.5">
+            <Clock size={16} style={{ color: isStory ? "#00AFF0" : "rgba(255,255,255,0.35)" }} />
+            <div>
+              <p className="text-sm font-medium" style={{ color: isStory ? "#00AFF0" : "rgba(255,255,255,0.7)" }}>
+                {t("create", "story")}
+              </p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Disappears after 24 hours</p>
+            </div>
+          </div>
           <div
-            className="w-10 h-6 rounded-full relative transition-colors"
+            className="relative transition-all"
             style={{
+              width: 44,
+              height: 24,
+              borderRadius: 12,
               background: isStory ? "#00AFF0" : "rgba(255,255,255,0.1)",
+              border: isStory ? "1px solid rgba(0,175,240,0.5)" : "1px solid rgba(255,255,255,0.1)",
+              flexShrink: 0,
             }}
+            onClick={() => setIsStory(!isStory)}
           >
             <div
-              className="w-4 h-4 rounded-full absolute top-1 transition-all"
               style={{
+                position: "absolute",
+                top: 3,
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
                 background: "#FFFFFF",
-                left: isStory ? "22px" : "4px",
+                left: isStory ? 22 : 3,
+                transition: "left 0.2s ease",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
               }}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={16} style={{ color: isStory ? "#00AFF0" : "rgba(255,255,255,0.4)" }} />
-            <span className="text-sm" style={{ color: isStory ? "#00AFF0" : "rgba(255,255,255,0.6)" }}>
-              {t("create", "story")}
-            </span>
           </div>
         </label>
 
@@ -219,10 +258,13 @@ export default function CreatePostPage() {
         <button
           onClick={handlePublish}
           disabled={!mediaUrl || publishing || uploading}
-          className="btn-primary w-full flex items-center justify-center gap-2"
+          className="btn-primary w-full flex items-center justify-center gap-2 !py-3"
         >
           {publishing ? (
-            <Loader2 size={18} className="animate-spin" />
+            <>
+              <Loader2 size={17} className="animate-spin" />
+              Publishing...
+            </>
           ) : (
             <>
               <Check size={16} />
@@ -231,7 +273,7 @@ export default function CreatePostPage() {
           )}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -249,11 +291,11 @@ function TypeButton({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
       style={{
-        background: active ? "rgba(0,175,240,0.1)" : "transparent",
-        border: active ? "1px solid rgba(0,175,240,0.3)" : "1px solid rgba(255,255,255,0.08)",
-        color: active ? "#00AFF0" : "rgba(255,255,255,0.5)",
+        background: active ? "rgba(0,175,240,0.1)" : "rgba(255,255,255,0.03)",
+        border: active ? "1px solid rgba(0,175,240,0.25)" : "1px solid rgba(255,255,255,0.07)",
+        color: active ? "#00AFF0" : "rgba(255,255,255,0.45)",
       }}
     >
       {icon}
@@ -279,8 +321,8 @@ function VisibilityButton({
       className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all"
       style={{
         background: active ? "rgba(0,175,240,0.08)" : "rgba(255,255,255,0.03)",
-        border: active ? "1px solid rgba(0,175,240,0.3)" : "1px solid rgba(255,255,255,0.07)",
-        color: active ? "#00AFF0" : "rgba(255,255,255,0.5)",
+        border: active ? "1px solid rgba(0,175,240,0.25)" : "1px solid rgba(255,255,255,0.07)",
+        color: active ? "#00AFF0" : "rgba(255,255,255,0.45)",
       }}
     >
       {icon}
