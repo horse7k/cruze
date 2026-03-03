@@ -1,0 +1,114 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  output          = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PostType {
+  PHOTO
+  VIDEO
+}
+
+enum PlanType {
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  password      String?
+  walletAddress String?   @unique
+  nickname      String?   @unique
+  displayName   String?
+  bio           String?
+  profileImage  String?
+  bannerImage   String?
+  role          Role      @default(USER)
+  isCreator     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  subscriptionPlan SubscriptionPlan?
+  posts            Post[]
+  stories          Story[]
+  subscriptionsOut Subscription[]    @relation("subscriber")
+  subscriptionsIn  Subscription[]    @relation("creator")
+
+  @@index([nickname])
+  @@index([isCreator])
+}
+
+model SubscriptionPlan {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthlyPrice    Float
+  quarterlyPrice  Float
+  semiAnnualPrice Float
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subscription {
+  id           String             @id @default(cuid())
+  subscriberId String
+  creatorId    String
+  subscriber   User               @relation("subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  creator      User               @relation("creator", fields: [creatorId], references: [id], onDelete: Cascade)
+  planType     PlanType
+  startDate    DateTime           @default(now())
+  endDate      DateTime
+  status       SubscriptionStatus @default(ACTIVE)
+  amount       Float
+  createdAt    DateTime           @default(now())
+
+  @@unique([subscriberId, creatorId])
+  @@index([creatorId])
+  @@index([status])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      PostType
+  mediaUrl  String
+  caption   String?
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaUrl  String
+  type      PostType
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}

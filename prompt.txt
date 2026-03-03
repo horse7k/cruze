@@ -1,0 +1,14 @@
+Quero um site estilo onlyfans mas tema todo escuro e muito bem feito,
+a logo está como cruze.png.
+o site deve se chamar CruzeFans
+vai ser um site aonde criadores de conteúdo porem criar seus perfis, decidir o preço de sua assinatura e postar fotos e videos que somente seus assinantes podem ver,
+cada usuário tem seu slug que no caso de usuários que vão vender conteúdo eles devem ativar nas configurações um plano de conteúdo e valores para (mensal, trimestral e semestral)
+quero o site totalmente em ingles mas com opção de mudar idioma para ptbr e para espanhol,
+quero tela de login e cadastro de usuário estilizada, o usuário deve ter opção de entrar com a carteira solana (phantom ou jupiter) ou com email e senha, o mesmo para criar usuários
+uma vez criado ele deve ser obrigado a escolher um nickname para continuar navegando (nicknames são unicos e vão servir como slug para a pagina dos usuários também)
+no editar perfil o usuário consegue se marcar como criador e criar o plano de assinatura, definir foto de perfil e definir foto de banner
+usuários criadores de conteúdo podem postar estilo "story" que fica visivel por 24horas no seu perfil, semelhante a story do instagram,
+quero o projeto todo em next e que faça o upload no vercel criando um projeto novo, após criar o projeto você vai conectar via vercel no neon e criar um db para o projeto com tudo que é necessário para por rodar
+quero uma dashboard admin que o admin possa ver todos os usuários criados, valores vendidos etc etc
+ao gerar o banco do neon e conectar você deve criar um usuário de teste, um usuário admin e um usuário de teste de criador de conteudo ( ja com a config ativa )
+crie também usuários de teste que fizeram a assinatura do conteudo desse criador para que a gente teste se está tudo ok.
