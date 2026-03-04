@@ -320,8 +320,6 @@
 @media (max-width: 639px) {
   .post-card {
     border-radius: 12px;
-    margin-left: 6px;
-    margin-right: 6px;
   }
 
   .post-action {
