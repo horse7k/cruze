@@ -87,7 +87,7 @@ export default function FeedPage() {
 
   return (
     <div
-      className="mx-auto py-6"
+      className="mx-auto py-4 sm:py-6"
       style={{ maxWidth: 580 }}
     >
       {posts.length === 0 ? (
@@ -108,7 +108,7 @@ export default function FeedPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col" style={{ gap: "1px" }} data-feed>
+        <div className="flex flex-col" style={{ gap: "10px" }} data-feed>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
@@ -167,13 +167,18 @@ function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <div className="post-card">
+    <div className={`post-card${!post.isPublic ? " exclusive" : ""}`}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <Link href={`/${post.user.nickname}`} className="shrink-0">
           <div
             className="rounded-full overflow-hidden"
-            style={{ width: 44, height: 44, background: "#12121f", border: "2px solid rgba(255,255,255,0.06)" }}
+            style={{
+              width: 44,
+              height: 44,
+              background: "#12121f",
+              border: !post.isPublic ? "2px solid rgba(255,16,240,0.35)" : "2px solid rgba(255,255,255,0.06)",
+            }}
           >
             {post.user.profileImage ? (
               <Image

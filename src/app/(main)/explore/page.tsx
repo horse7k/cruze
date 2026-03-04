@@ -117,14 +117,14 @@ function CreatorCard({ creator }: { creator: Creator }) {
         </div>
 
         {/* Content */}
-        <div className="px-4 pb-4" style={{ marginTop: -28 }}>
+        <div className="px-4 pb-4" style={{ marginTop: -28, position: "relative", zIndex: 2 }}>
           {/* Avatar */}
           <div
             className="rounded-full overflow-hidden mb-3"
             style={{
               width: 56,
               height: 56,
-              border: "3px solid #000",
+              border: "3px solid #1a1a2e",
               background: "#12121f",
             }}
           >

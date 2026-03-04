@@ -83,7 +83,8 @@
 
   .card-hover:hover {
     background: #222240;
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 16, 240, 0.2);
+    box-shadow: 0 0 16px rgba(255, 16, 240, 0.04);
   }
 
   /* Keep old class names for compatibility */
@@ -262,9 +263,20 @@
   /* ---- Post Card ---- */
   .post-card {
     background: #1a1a2e;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
+    border: 1px solid rgba(255, 16, 240, 0.12);
+    border-radius: 16px;
     overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-card:hover {
+    border-color: rgba(255, 16, 240, 0.25);
+    box-shadow: 0 0 20px rgba(255, 16, 240, 0.06);
+  }
+
+  .post-card.exclusive {
+    border-color: rgba(255, 16, 240, 0.3);
+    box-shadow: 0 0 24px rgba(255, 16, 240, 0.08);
   }
 
   .post-action {
@@ -307,9 +319,9 @@
 /* ---- MOBILE POLISH ---- */
 @media (max-width: 639px) {
   .post-card {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+    border-radius: 12px;
+    margin-left: 6px;
+    margin-right: 6px;
   }
 
   .post-action {
@@ -318,6 +330,11 @@
 
   .bottom-nav-item span {
     font-size: 9px;
+  }
+
+  [data-feed] {
+    gap: 10px !important;
+    padding: 0 2px;
   }
 }
 
@@ -330,7 +347,7 @@
 /* Feed gap responsive */
 @media (min-width: 640px) {
   [data-feed] {
-    gap: 12px !important;
+    gap: 14px !important;
   }
 }
 
