@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { isValidNickname } from "@/lib/utils";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { AtSign, Check, X, Loader2, ArrowRight } from "lucide-react";
 
 export default function NicknamePage() {
   const { t } = useI18n();
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [nickname, setNickname] = useState("");
   const [checking, setChecking] = useState(false);
@@ -82,6 +81,8 @@ export default function NicknamePage() {
         return;
       }
 
+      // Force session refresh so /feed sees the new nickname
+      await update();
       router.push("/feed");
     } catch {
       setError("Something went wrong");
@@ -93,126 +94,120 @@ export default function NicknamePage() {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
-        style={{ background: "#0A0A0A" }}
+        style={{ background: "#000000" }}
       >
-        <Loader2 size={30} className="animate-spin" style={{ color: "#00AFF0" }} />
+        <Loader2 size={28} className="animate-spin" style={{ color: "#FF10F0" }} />
       </div>
     );
   }
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden"
-      style={{ background: "#0A0A0A" }}
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: "#000000" }}
     >
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,175,240,0.1) 0%, transparent 55%)",
-        }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          mask: "radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)",
-          WebkitMask: "radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent)",
-        }}
-      />
-
-      <motion.div
-        className="relative w-full max-w-[420px]"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      >
+      <div className="w-full max-w-[400px]">
         {/* Logo */}
-        <div className="text-center mb-9">
-          <Link href="/" className="inline-flex items-center gap-3 mb-7">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6">
             <img
               src="/cruze.png"
               alt="CruzeFans"
-              width={36}
-              height={36}
-              style={{ filter: "drop-shadow(0 0 8px rgba(0,175,240,0.45))" }}
+              width={34}
+              height={34}
             />
             <span
-              className="text-2xl font-bold tracking-tight"
-              style={{ color: "rgba(255,255,255,0.9)" }}
+              className="text-xl font-bold tracking-tight"
+              style={{ color: "#e8e8e8" }}
             >
-              Cruze<span style={{ color: "#00AFF0" }}>Fans</span>
+              Cruze<span style={{ color: "#FF10F0" }}>Fans</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-2">
+
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ color: "#e8e8e8" }}
+          >
             {t("auth", "nickname_title")}
           </h1>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <p
+            className="text-sm"
+            style={{ color: "#8a96a3" }}
+          >
             {t("auth", "nickname_subtitle")}
           </p>
         </div>
 
         {/* Card */}
         <div
-          className="rounded-2xl p-7"
+          className="rounded-2xl p-6"
           style={{
-            background: "linear-gradient(145deg, rgba(17,17,17,0.98), rgba(13,13,13,0.96))",
-            border: "1px solid rgba(255,255,255,0.08)",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.5), 0 0 40px rgba(0,175,240,0.04)",
+            background: "#1a1a2e",
+            border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
-                className="block text-xs font-semibold mb-2 uppercase tracking-wider"
-                style={{ color: "rgba(255,255,255,0.4)" }}
+                className="block text-xs font-semibold mb-1.5 uppercase tracking-wider"
+                style={{ color: "#5f6b7a" }}
               >
-                Username
+                {t("auth", "nickname_label") || "Username"}
               </label>
+
+              {/* Input with @ prefix icon and status indicator */}
               <div className="relative">
                 <AtSign
                   size={15}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: "rgba(255,255,255,0.25)" }}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "#5f6b7a" }}
                 />
                 <input
                   type="text"
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-                  className="input-field !pl-11 !pr-11"
+                  onChange={(e) =>
+                    setNickname(
+                      e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
+                    )
+                  }
+                  className="input-field !pl-10 !pr-10"
                   placeholder={t("auth", "nickname_placeholder")}
                   maxLength={20}
                   required
+                  autoComplete="username"
                   style={{
-                    borderColor: available === true
-                      ? "rgba(34,197,94,0.4)"
-                      : available === false
-                      ? "rgba(239,68,68,0.4)"
-                      : undefined,
+                    borderColor:
+                      available === true
+                        ? "rgba(29,185,84,0.5)"
+                        : available === false
+                        ? "rgba(231,76,60,0.5)"
+                        : undefined,
                   }}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+
+                {/* Status indicator */}
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
                   {checking && (
-                    <Loader2 size={15} className="animate-spin" style={{ color: "rgba(255,255,255,0.3)" }} />
+                    <Loader2
+                      size={14}
+                      className="animate-spin"
+                      style={{ color: "#5f6b7a" }}
+                    />
                   )}
                   {!checking && available === true && (
                     <div
                       className="w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: "rgba(34,197,94,0.15)" }}
+                      style={{ background: "rgba(29,185,84,0.15)" }}
                     >
-                      <Check size={11} style={{ color: "#22C55E" }} />
+                      <Check size={11} style={{ color: "#1db954" }} />
                     </div>
                   )}
                   {!checking && available === false && (
                     <div
                       className="w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: "rgba(239,68,68,0.15)" }}
+                      style={{ background: "rgba(231,76,60,0.15)" }}
                     >
-                      <X size={11} style={{ color: "#EF4444" }} />
+                      <X size={11} style={{ color: "#e74c3c" }} />
                     </div>
                   )}
                 </div>
@@ -220,59 +215,77 @@ export default function NicknamePage() {
 
               {/* URL preview */}
               {nickname.length >= 3 && (
-                <p className="text-xs mt-2.5" style={{ color: "rgba(255,255,255,0.28)" }}>
+                <p
+                  className="text-xs mt-2"
+                  style={{ color: "#5f6b7a" }}
+                >
                   cruzefans.com/
-                  <span style={{ color: "#00AFF0", fontWeight: 600 }}>{nickname}</span>
+                  <span style={{ color: "#FF10F0", fontWeight: 600 }}>
+                    {nickname}
+                  </span>
                 </p>
               )}
 
-              {/* Status messages */}
+              {/* Availability messages */}
               {available === true && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: "#22C55E" }}>
+                <p
+                  className="text-xs mt-1 font-medium"
+                  style={{ color: "#1db954" }}
+                >
                   {t("auth", "nickname_available")}
                 </p>
               )}
               {available === false && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: "#EF4444" }}>
+                <p
+                  className="text-xs mt-1 font-medium"
+                  style={{ color: "#e74c3c" }}
+                >
                   {t("auth", "nickname_taken")}
                 </p>
               )}
 
-              <p className="text-xs mt-2.5" style={{ color: "rgba(255,255,255,0.25)" }}>
+              {/* Rules hint */}
+              <p
+                className="text-xs mt-2"
+                style={{ color: "#5f6b7a" }}
+              >
                 {t("auth", "nickname_rules")}
               </p>
             </div>
 
+            {/* Error */}
             {error && (
               <div
                 className="px-4 py-3 rounded-xl text-sm"
+                role="alert"
                 style={{
-                  background: "rgba(239,68,68,0.08)",
-                  border: "1px solid rgba(239,68,68,0.2)",
-                  color: "#FC8181",
+                  background: "rgba(231,76,60,0.08)",
+                  border: "1px solid rgba(231,76,60,0.2)",
+                  color: "#e74c3c",
                 }}
               >
                 {error}
               </div>
             )}
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading || !available || !isValidNickname(nickname)}
-              className="btn-primary w-full flex items-center justify-center gap-2 !py-3"
+              className="btn-primary w-full !py-3"
             >
               {loading ? (
-                <Loader2 size={17} className="animate-spin" />
+                <Loader2 size={16} className="animate-spin" />
               ) : (
                 <>
                   {t("auth", "nickname_button")}
-                  <ArrowRight size={16} />
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
           </form>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

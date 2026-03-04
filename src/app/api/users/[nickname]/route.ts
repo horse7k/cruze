@@ -41,24 +41,29 @@ export async function GET(
     isSubscribed = subscription?.status === "ACTIVE";
   }
 
-  // Get posts (public ones + exclusive if subscribed or own profile)
+  // Get posts — hide all for unauthenticated users
   const isOwner = currentUserId === user.id;
-  const posts = await prisma.post.findMany({
-    where: {
-      userId: user.id,
-      ...((!isOwner && !isSubscribed) ? { isPublic: true } : {}),
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const isAuthenticated = !!currentUserId;
+  const posts = isAuthenticated
+    ? await prisma.post.findMany({
+        where: {
+          userId: user.id,
+          ...((!isOwner && !isSubscribed) ? { isPublic: true } : {}),
+        },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
 
-  // Get active stories
-  const stories = await prisma.story.findMany({
-    where: {
-      userId: user.id,
-      expiresAt: { gt: new Date() },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  // Get active stories — hide for unauthenticated
+  const stories = isAuthenticated
+    ? await prisma.story.findMany({
+        where: {
+          userId: user.id,
+          expiresAt: { gt: new Date() },
+        },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
 
   return NextResponse.json({
     id: user.id,

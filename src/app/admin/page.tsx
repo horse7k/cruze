@@ -12,7 +12,6 @@ import {
   Search,
   ImageIcon,
   Loader2,
-  TrendingUp,
 } from "lucide-react";
 
 interface AdminData {
@@ -36,15 +35,6 @@ interface AdminData {
   }>;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 16 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const, delay: i * 0.07 },
-  }),
-};
-
 export default function AdminPage() {
   const { t } = useI18n();
   const [data, setData] = useState<AdminData | null>(null);
@@ -54,8 +44,8 @@ export default function AdminPage() {
   useEffect(() => {
     fetch("/api/admin")
       .then((res) => res.json())
-      .then((data) => {
-        setData(data);
+      .then((d) => {
+        setData(d);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -64,7 +54,7 @@ export default function AdminPage() {
   if (loading || !data) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={28} className="animate-spin" style={{ color: "#00AFF0" }} />
+        <Loader2 size={24} className="animate-spin" style={{ color: "#FF10F0" }} />
       </div>
     );
   }
@@ -76,64 +66,98 @@ export default function AdminPage() {
       u.displayName?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const stats = [
+    {
+      icon: <Users size={17} />,
+      label: t("admin", "total_users"),
+      value: data.stats.totalUsers.toString(),
+      color: "#FF10F0",
+    },
+    {
+      icon: <Crown size={17} />,
+      label: t("admin", "total_creators"),
+      value: data.stats.totalCreators.toString(),
+      color: "#7B61FF",
+    },
+    {
+      icon: <CreditCard size={17} />,
+      label: t("admin", "total_subs"),
+      value: data.stats.totalSubscriptions.toString(),
+      color: "#1db954",
+    },
+    {
+      icon: <DollarSign size={17} />,
+      label: t("admin", "total_revenue"),
+      value: formatCurrency(data.stats.totalRevenue),
+      color: "#f39c12",
+    },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="mb-7"
       >
-        <h1 className="text-2xl font-bold tracking-tight">{t("admin", "title")}</h1>
-        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.38)" }}>
+        <h1 className="text-xl font-bold text-white">{t("admin", "title")}</h1>
+        <p className="text-sm mt-0.5" style={{ color: "#8a96a3" }}>
           Platform overview and user management
         </p>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        {[
-          { icon: <Users size={18} />, label: t("admin", "total_users"), value: data.stats.totalUsers.toString(), color: "#00AFF0", index: 0 },
-          { icon: <Crown size={18} />, label: t("admin", "total_creators"), value: data.stats.totalCreators.toString(), color: "#7B61FF", index: 1 },
-          { icon: <CreditCard size={18} />, label: t("admin", "total_subs"), value: data.stats.totalSubscriptions.toString(), color: "#22C55E", index: 2 },
-          { icon: <DollarSign size={18} />, label: t("admin", "total_revenue"), value: formatCurrency(data.stats.totalRevenue), color: "#F59E0B", index: 3 },
-        ].map((stat) => (
-          <motion.div key={stat.label} custom={stat.index} variants={cardVariants} initial="hidden" animate="show">
-            <StatCard icon={stat.icon} label={stat.label} value={stat.value} color={stat.color} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-7">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.06 }}
+          >
+            <StatCard
+              icon={stat.icon}
+              label={stat.label}
+              value={stat.value}
+              color={stat.color}
+            />
           </motion.div>
         ))}
       </div>
 
-      {/* User Management Table */}
+      {/* Users Table */}
       <motion.div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, #111111, #0E0E0E)",
-          border: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 2px 16px rgba(0,0,0,0.3)",
-        }}
-        initial={{ opacity: 0, y: 16 }}
+        className="card overflow-hidden"
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
+        transition={{ duration: 0.3, delay: 0.28 }}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 py-5">
+        {/* Table header */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 py-4"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        >
           <div>
-            <h2 className="text-[15px] font-semibold text-white">{t("admin", "user_management")}</h2>
-            <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>
+            <h2 className="text-[15px] font-semibold text-white">
+              {t("admin", "user_management")}
+            </h2>
+            <p className="text-xs mt-0.5" style={{ color: "#5f6b7a" }}>
               {filtered.length} users
             </p>
           </div>
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-60">
             <Search
-              size={14}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ color: "rgba(255,255,255,0.25)" }}
+              size={13}
+              className="absolute top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ left: 14, color: "#5f6b7a" }}
             />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-field !pl-10 !py-2 !text-sm"
+              className="input-field"
+              style={{ paddingLeft: 38, paddingTop: 9, paddingBottom: 9, fontSize: 13 }}
               placeholder={t("admin", "search")}
             />
           </div>
@@ -143,52 +167,69 @@ export default function AdminPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr
-                style={{
-                  borderTop: "1px solid rgba(255,255,255,0.05)",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
-                  background: "rgba(255,255,255,0.015)",
-                }}
-              >
-                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>
+              <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                <th
+                  className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider"
+                  style={{ color: "#5f6b7a" }}
+                >
                   User
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <th
+                  className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider"
+                  style={{ color: "#5f6b7a" }}
+                >
                   {t("admin", "role")}
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider hidden sm:table-cell" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <th
+                  className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider hidden sm:table-cell"
+                  style={{ color: "#5f6b7a" }}
+                >
                   {t("profile", "posts")}
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider hidden sm:table-cell" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <th
+                  className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider hidden sm:table-cell"
+                  style={{ color: "#5f6b7a" }}
+                >
                   {t("profile", "subscribers")}
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: "rgba(255,255,255,0.3)" }}>
+                <th
+                  className="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-wider hidden md:table-cell"
+                  style={{ color: "#5f6b7a" }}
+                >
                   {t("admin", "joined")}
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((user, idx) => (
+              {filtered.map((user) => (
                 <tr
                   key={user.id}
                   className="transition-colors"
-                  style={{
-                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
                 >
-                  <td className="px-5 py-4">
+                  <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden"
+                        className="rounded-full overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold"
                         style={{
-                          background: user.profileImage ? undefined : "linear-gradient(135deg, rgba(0,175,240,0.2), rgba(123,97,255,0.2))",
-                          color: "#00AFF0",
+                          width: 32,
+                          height: 32,
+                          background: user.profileImage ? undefined : "rgba(255,16,240,0.1)",
+                          color: "#FF10F0",
                         }}
                       >
                         {user.profileImage ? (
-                          <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={user.profileImage}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           user.nickname?.[0]?.toUpperCase() || "?"
                         )}
@@ -197,58 +238,60 @@ export default function AdminPage() {
                         <p className="text-sm font-medium text-white truncate">
                           {user.displayName || user.nickname || "No name"}
                         </p>
-                        <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.3)" }}>
+                        <p
+                          className="text-xs truncate"
+                          style={{ color: "#5f6b7a" }}
+                        >
                           {user.email || `@${user.nickname}`}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-4">
+
+                  <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {user.role === "ADMIN" && (
-                        <span
-                          className="text-[11px] px-2 py-0.5 rounded-full font-semibold"
-                          style={{ background: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.15)" }}
-                        >
-                          Admin
-                        </span>
+                        <span className="badge badge-amber">Admin</span>
                       )}
                       {user.isCreator && (
-                        <span
-                          className="text-[11px] px-2 py-0.5 rounded-full font-semibold"
-                          style={{ background: "rgba(123,97,255,0.12)", color: "#A78BFA", border: "1px solid rgba(123,97,255,0.15)" }}
-                        >
+                        <span className="badge badge-purple">
                           {t("admin", "creator")}
                         </span>
                       )}
                       {!user.isCreator && user.role !== "ADMIN" && (
                         <span
-                          className="text-[11px] px-2 py-0.5 rounded-full font-semibold"
-                          style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", border: "1px solid rgba(255,255,255,0.08)" }}
+                          className="badge"
+                          style={{
+                            background: "rgba(255,255,255,0.05)",
+                            color: "#8a96a3",
+                          }}
                         >
                           User
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-5 py-4 hidden sm:table-cell">
+
+                  <td className="px-5 py-3.5 hidden sm:table-cell">
                     <div className="flex items-center gap-1.5">
-                      <ImageIcon size={13} style={{ color: "rgba(255,255,255,0.22)" }} />
-                      <span className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <ImageIcon size={12} style={{ color: "#5f6b7a" }} />
+                      <span className="text-sm" style={{ color: "#8a96a3" }}>
                         {user.postsCount}
                       </span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 hidden sm:table-cell">
+
+                  <td className="px-5 py-3.5 hidden sm:table-cell">
                     <div className="flex items-center gap-1.5">
-                      <Users size={13} style={{ color: "rgba(255,255,255,0.22)" }} />
-                      <span className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <Users size={12} style={{ color: "#5f6b7a" }} />
+                      <span className="text-sm" style={{ color: "#8a96a3" }}>
                         {user.subscribersCount}
                       </span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 hidden md:table-cell">
-                    <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+
+                  <td className="px-5 py-3.5 hidden md:table-cell">
+                    <span className="text-xs" style={{ color: "#5f6b7a" }}>
                       {formatDate(user.createdAt)}
                     </span>
                   </td>
@@ -259,7 +302,9 @@ export default function AdminPage() {
 
           {filtered.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>No users found</p>
+              <p className="text-sm" style={{ color: "#5f6b7a" }}>
+                No users found
+              </p>
             </div>
           )}
         </div>
@@ -281,28 +326,21 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-2xl p-5 transition-all"
-      style={{
-        background: "linear-gradient(145deg, #111111, #0E0E0E)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.25)",
-      }}
+      className="card p-5 transition-colors"
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = `${color}25`;
-        e.currentTarget.style.boxShadow = `0 2px 12px rgba(0,0,0,0.25), 0 0 20px ${color}08`;
+        e.currentTarget.style.background = "#222240";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
-        e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.25)";
+        e.currentTarget.style.background = "#1a1a2e";
       }}
     >
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-        style={{ background: `${color}10`, color, border: `1px solid ${color}18` }}
+        className="w-9 h-9 rounded-lg flex items-center justify-center mb-4"
+        style={{ background: `${color}12`, color }}
       >
         {icon}
       </div>
-      <p className="text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.38)" }}>
+      <p className="text-xs font-medium mb-1" style={{ color: "#8a96a3" }}>
         {label}
       </p>
       <p className="text-2xl font-bold text-white tracking-tight">{value}</p>

@@ -45,26 +45,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         message: { label: "Message", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.walletAddress) return null;
+        try {
+          if (!credentials?.walletAddress) {
+            console.error("[wallet-auth] No walletAddress provided");
+            return null;
+          }
 
-        const walletAddress = credentials.walletAddress as string;
+          const walletAddress = credentials.walletAddress as string;
+          console.log("[wallet-auth] Attempting auth for:", walletAddress);
 
-        let user = await prisma.user.findUnique({
-          where: { walletAddress },
-        });
-
-        if (!user) {
-          user = await prisma.user.create({
-            data: { walletAddress },
+          let user = await prisma.user.findUnique({
+            where: { walletAddress },
           });
-        }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.displayName || user.nickname,
-          image: user.profileImage,
-        };
+          if (!user) {
+            console.log("[wallet-auth] Creating new user for wallet:", walletAddress);
+            user = await prisma.user.create({
+              data: { walletAddress },
+            });
+          }
+
+          console.log("[wallet-auth] Success, user id:", user.id);
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.displayName || user.nickname,
+            image: user.profileImage,
+          };
+        } catch (error) {
+          console.error("[wallet-auth] Error:", error);
+          return null;
+        }
       },
     }),
   ],

@@ -17,7 +17,7 @@ export default function SolanaWalletProvider({
   children: ReactNode;
 }) {
   const endpoint = useMemo(
-    () => process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl("devnet"),
+    () => process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://mainnet.helius-rpc.com/?api-key=651a94ce-5857-48bb-a694-b8d55d5c88a6",
     []
   );
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);

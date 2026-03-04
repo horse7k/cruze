@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, refCode } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
@@ -27,6 +27,16 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
       },
     });
+
+    // Track referral if refCode provided
+    if (refCode && typeof refCode === "string") {
+      const referrer = await prisma.user.findUnique({ where: { referralCode: refCode } });
+      if (referrer) {
+        await prisma.referral.create({
+          data: { referrerId: referrer.id, referredId: user.id },
+        }).catch(() => {}); // ignore if already exists
+      }
+    }
 
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
   } catch (error) {

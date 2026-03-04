@@ -20,7 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#0A0A0A" }}>
-        <Loader2 size={32} className="animate-spin" style={{ color: "#00AFF0" }} />
+        <Loader2 size={32} className="animate-spin" style={{ color: "#FF10F0" }} />
       </div>
     );
   }

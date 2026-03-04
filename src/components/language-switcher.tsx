@@ -67,8 +67,8 @@ export default function LanguageSwitcher() {
               }}
               className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm transition-colors text-left"
               style={{
-                color: locale === lang.code ? "#00AFF0" : "rgba(255,255,255,0.8)",
-                background: locale === lang.code ? "rgba(0,175,240,0.08)" : "transparent",
+                color: locale === lang.code ? "#FF10F0" : "rgba(255,255,255,0.8)",
+                background: locale === lang.code ? "rgba(255,16,240,0.08)" : "transparent",
               }}
               onMouseEnter={(e) => {
                 if (locale !== lang.code) {
@@ -77,7 +77,7 @@ export default function LanguageSwitcher() {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background =
-                  locale === lang.code ? "rgba(0,175,240,0.08)" : "transparent";
+                  locale === lang.code ? "rgba(255,16,240,0.08)" : "transparent";
               }}
             >
               <span className="font-semibold text-xs w-6">{lang.flag}</span>

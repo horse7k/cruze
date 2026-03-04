@@ -1,7 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  output          = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -43,6 +42,7 @@ model User {
   bannerImage   String?
   role          Role      @default(USER)
   isCreator     Boolean   @default(false)
+  referralCode  String?   @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -51,9 +51,13 @@ model User {
   stories          Story[]
   subscriptionsOut Subscription[]    @relation("subscriber")
   subscriptionsIn  Subscription[]    @relation("creator")
+  comments         Comment[]
+  referralsGiven   Referral[]        @relation("referrer")
+  referralsReceived Referral[]       @relation("referred")
 
   @@index([nickname])
   @@index([isCreator])
+  @@index([referralCode])
 }
 
 model SubscriptionPlan {
@@ -95,9 +99,34 @@ model Post {
   caption   String?
   isPublic  Boolean  @default(false)
   createdAt DateTime @default(now())
+  comments  Comment[]
 
   @@index([userId])
   @@index([createdAt(sort: Desc)])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Referral {
+  id         String   @id @default(cuid())
+  referrerId String
+  referrer   User     @relation("referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredId String   @unique
+  referred   User     @relation("referred", fields: [referredId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([referrerId])
 }
 
 model Story {

@@ -50,19 +50,24 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { displayName, bio, profileImage, bannerImage, isCreator } = body;
+  try {
+    const body = await req.json();
+    const { displayName, bio, profileImage, bannerImage, isCreator } = body;
 
-  const user = await prisma.user.update({
-    where: { id: (session.user as any).id },
-    data: {
-      ...(displayName !== undefined && { displayName }),
-      ...(bio !== undefined && { bio }),
-      ...(profileImage !== undefined && { profileImage }),
-      ...(bannerImage !== undefined && { bannerImage }),
-      ...(isCreator !== undefined && { isCreator }),
-    },
-  });
+    const user = await prisma.user.update({
+      where: { id: (session.user as any).id },
+      data: {
+        ...(displayName !== undefined && { displayName }),
+        ...(bio !== undefined && { bio }),
+        ...(profileImage !== undefined && { profileImage }),
+        ...(bannerImage !== undefined && { bannerImage }),
+        ...(isCreator !== undefined && { isCreator }),
+      },
+    });
 
-  return NextResponse.json({ success: true, user });
+    return NextResponse.json({ success: true, user });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+  }
 }
